@@ -15,7 +15,7 @@ const main = (): void => {
 
   // initialize display settings
   const cgl: WebGL = new WebGL();
-  cgl.initDisplay(gl, [0, 0, 0, 0]);
+  cgl.initDisplay(gl, [0.0, 0.0, 0.0, 0.0]);
 
   // compile shaders
   const vertexShader: WebGLShader = cgl.createShader(gl, 'VERTEX_SHADER', vs);
@@ -24,34 +24,44 @@ const main = (): void => {
   // create program object & link
   const program: WebGLProgram = cgl.createProgram(gl, vertexShader, fragmentShader);
 
-  // create model
-  const position: number[] = [0, 1, 0, 1, -1, 0, -1, -1, 0];
-  const pVBO: WebGLBuffer = cgl.createVBO(gl, position);
-  cgl.reBindVBO(gl, pVBO);
-  cgl.attributeRegist(gl, program, 'position', 3);
+  // create model / color
+  const VERTEX_SIZE: number = 3; // vec3
+  const COLOR_SIZE: number = 4; // vec4
 
-  // create color
+  const position: number[] = [0.0, 1.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0];
+  const posVBO: WebGLBuffer = cgl.createVBO(gl, position);
+  cgl.setAttribute(gl, posVBO, program, 'position', VERTEX_SIZE);
+
   const color: number[] = [1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0];
-  const cVBO: WebGLBuffer = cgl.createVBO(gl, color);
-  cgl.reBindVBO(gl, cVBO);
-  cgl.attributeRegist(gl, program, 'color', 4);
+  const colVBO: WebGLBuffer = cgl.createVBO(gl, color);
+  cgl.setAttribute(gl, colVBO, program, 'color', COLOR_SIZE);
 
   // matrix transformation
   const m: MatX = new MatX();
   const mMatrix: Float32Array = m.identity(m.create());
   const vMatrix: Float32Array = m.identity(m.create());
   const pMatrix: Float32Array = m.identity(m.create());
+  const tmpMatrix: Float32Array = m.identity(m.create());
   const mvpMatrix: Float32Array = m.identity(m.create());
-  m.lookAt([0.0, 1.0, 3.0], [0, 0, 0], [0, 1, 0], vMatrix);
-  m.perspective(45, c.width / c.height, 0.1, 100, pMatrix);
-  m.multiply(pMatrix, vMatrix, mvpMatrix);
-  m.multiply(mvpMatrix, mMatrix, mvpMatrix);
+  m.lookAt([0.0, 0.0, 3.0], [0, 0, 0], [0, 1, 0], vMatrix);
+  m.perspective(90, c.width / c.height, 0.1, 100, pMatrix);
+  m.multiply(pMatrix, vMatrix, tmpMatrix);
 
-  // uniformLocation
-  cgl.uniformLocRegist(gl, program, mvpMatrix, 'mvpMatrix');
+  // matrix transformation - 1st model
+  m.transrate(mMatrix, [1.5, 0.0, 0.0], mMatrix);
+  m.multiply(tmpMatrix, mMatrix, mvpMatrix);
+  cgl.setUniformLoc(gl, program, mvpMatrix, 'mvpMatrix');
+  cgl.drawTriangle(gl);
 
-  // draw model
-  cgl.drawTriangles(gl);
+  // matrix transformation - 2nd model
+  m.identity(mMatrix);
+  m.transrate(mMatrix, [-1.5, 0.0, 0.0], mMatrix);
+  m.multiply(tmpMatrix, mMatrix, mvpMatrix);
+  cgl.setUniformLoc(gl, program, mvpMatrix, 'mvpMatrix');
+  cgl.drawTriangle(gl);
+
+  // execute drawing
+  gl.flush();
 };
 
 window.onload = main;
