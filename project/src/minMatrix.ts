@@ -75,6 +75,26 @@ class MatX {
     return dest;
   };
 
+  transrate = (mat: Float32Array, vec: number[], dest: Float32Array): Float32Array => {
+    dest[0] = mat[0];
+    dest[1] = mat[1];
+    dest[2] = mat[2];
+    dest[3] = mat[3];
+    dest[4] = mat[4];
+    dest[5] = mat[5];
+    dest[6] = mat[6];
+    dest[7] = mat[7];
+    dest[8] = mat[8];
+    dest[9] = mat[9];
+    dest[10] = mat[10];
+    dest[11] = mat[11];
+    dest[12] = mat[0] * vec[0] + mat[4] * vec[1] + mat[8] * vec[2] + mat[12];
+    dest[13] = mat[1] * vec[0] + mat[5] * vec[1] + mat[9] * vec[2] + mat[13];
+    dest[14] = mat[2] * vec[0] + mat[6] * vec[1] + mat[10] * vec[2] + mat[14];
+    dest[15] = mat[3] * vec[0] + mat[7] * vec[1] + mat[11] * vec[2] + mat[15];
+    return dest;
+  };
+
   lookAt = (eye: number[], center: number[], up: number[], dest: Float32Array): Float32Array => {
     const eyeX: number = eye[0];
     const eyeY: number = eye[1];

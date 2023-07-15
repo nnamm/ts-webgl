@@ -49,11 +49,14 @@ class WebGL {
     return vbo;
   };
 
-  reBindVBO = (gl: WebGL2RenderingContext, vbo: WebGLBuffer): void => {
+  setAttribute = (
+    gl: WebGL2RenderingContext,
+    vbo: WebGLBuffer,
+    program: WebGLProgram,
+    locName: string,
+    elementSize: number
+  ): void => {
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-  };
-
-  attributeRegist = (gl: WebGL2RenderingContext, program: WebGLProgram, locName: string, elementSize: number): void => {
     const index: number = gl.getAttribLocation(program, locName);
     const size: number = elementSize;
     const type: number = gl.FLOAT;
@@ -64,7 +67,7 @@ class WebGL {
     gl.vertexAttribPointer(index, size, type, normalized, stride, offset);
   };
 
-  uniformLocRegist = (
+  setUniformLoc = (
     gl: WebGL2RenderingContext,
     program: WebGLProgram,
     mvpMatrix: Float32Array,
@@ -74,9 +77,8 @@ class WebGL {
     gl.uniformMatrix4fv(uniLocation, false, mvpMatrix);
   };
 
-  drawTriangles = (gl: WebGL2RenderingContext): void => {
+  drawTriangle = (gl: WebGL2RenderingContext): void => {
     gl.drawArrays(gl.TRIANGLES, 0, 3);
-    gl.flush();
   };
 }
 
